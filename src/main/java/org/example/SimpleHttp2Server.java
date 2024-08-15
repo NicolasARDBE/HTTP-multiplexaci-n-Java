@@ -22,13 +22,19 @@ public class SimpleHttp2Server {
         connector.setPort(8080);
         server.addConnector(connector);
 
-        // Establecer un manejador simple
+        // Establecer un manejador que responda solo a la ruta "/"
         server.setHandler(new AbstractHandler() {
             @Override
-            public void handle(String s, Request request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, ServletException {
-                httpServletResponse.setContentType("text/plain;charset=utf-8");
-                httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-                httpServletResponse.getWriter().println("Hello HTTP/2 (h2c) World!");
+            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+                // Validar si la ruta es "/"
+                if ("/".equals(target)) {
+                    response.setContentType("text/plain;charset=utf-8");
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    response.getWriter().println("Hello HTTP/2 (h2c) World!");
+                    baseRequest.setHandled(true);
+                } else {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                }
             }
         });
 
